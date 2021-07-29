@@ -26,8 +26,9 @@ To install JavaScript packages, use `yarn add <package-name>` as usual.
 results to the first three matches. You are free to decide how many characters
 should constitute a match (fuzzy matching is not required). Clicking a result
 should populate the user's name, location, followers, and respositories in the
-widget. (**Note:** You do _not_ need to implement `Enter` or arrow key
-functionality in the autocomplete).
+widget (that data can be found at the
+[GitHub users API](https://api.github.com/users)). **Note:** You do _not_ need
+to implement `Enter` or arrow key functionality in the autocomplete.
 
 1. Bonus: Display a nicely formatted error message if no user matching the
 input could be found.
