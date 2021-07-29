@@ -13,8 +13,5 @@ node_modules
 # Desktop Services Store on macOS
 .DS_Store
 
-# Compiled CSS
-project/src/**/*.css
-
 # Source maps
 project/src/**/*.map

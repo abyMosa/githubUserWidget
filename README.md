@@ -13,9 +13,10 @@ dev server. See [that project's README](https://github.com/halfzebra/create-elm-
 if you run into any issues during installation.
 
 1. `cd project && yarn` and then `yarn elm-app-start` to start the dev server.
-Run `yarn watch-css` in a separate terminal to compile the Sass. Navigate to
-[http://localhost:3000](http://localhost:3000) in your browser (if it doesn't
-automatically open).
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser
+(if it doesn't automatically open). `create-elm-app` uses PostCSS by default and
+you can install any plugins you like, and should you wish to use Sass instead
+you can rename `main.css` to `main.scss` and run `yarn watch-css`.
 
 1. You are not required to use any external packages, but should you wish to
 do so you can install Elm packages with `yarn elm-app-install <package-name>`.
