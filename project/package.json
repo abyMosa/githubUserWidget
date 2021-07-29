@@ -1,0 +1,17 @@
+{
+  "name": "elm-github-users",
+  "version": "1.0.0",
+  "description": "GitHub User Autocomplete",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "elm-app-build": "../node_modules/create-elm-app/bin/elm-app-cli.js build",
+    "elm-app-start": "../node_modules/create-elm-app/bin/elm-app-cli.js start",
+    "elm-app-install": "../node_modules/create-elm-app/bin/elm-app-cli.js install",
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "yarn build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
+  },
+  "devDependencies": {
+    "node-sass-chokidar": "^1.5.0"
+  }
+}
