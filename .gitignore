@@ -1,11 +1,11 @@
 # Distribution
-build/
+project/build/
 
 # elm-package generated files
-elm-stuff
+project/elm-stuff
 
 # elm-repl generated files
-repl-temp-*
+project/repl-temp-*
 
 # Dependency directories
 node_modules
@@ -14,4 +14,7 @@ node_modules
 .DS_Store
 
 # Compiled CSS
-src/**/*.css
+project/src/**/*.css
+
+# Source maps
+project/src/**/*.map
