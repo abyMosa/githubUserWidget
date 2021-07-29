@@ -8,10 +8,10 @@
     "elm-app-build": "../node_modules/create-elm-app/bin/elm-app-cli.js build",
     "elm-app-start": "../node_modules/create-elm-app/bin/elm-app-cli.js start",
     "elm-app-install": "../node_modules/create-elm-app/bin/elm-app-cli.js install",
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "yarn build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
+    "build-css": "sass src:src",
+    "watch-css": "sass --watch src:src"
   },
   "devDependencies": {
-    "node-sass-chokidar": "^1.5.0"
+    "sass": "^1.36.0"
   }
 }
