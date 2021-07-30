@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
+import Components.GitHubWidget as GitHubWidget
 
 
 
@@ -10,12 +11,12 @@ import Html.Attributes exposing (src)
 
 
 type alias Model =
-    {}
+    {gitHubWidget : GitHubWidget.Model}
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( Model GitHubWidget.init, Cmd.none )
 
 
 
@@ -23,12 +24,17 @@ init =
 
 
 type Msg
-    = NoOp
+    = GitHubWidgetMsg GitHubWidget.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        GitHubWidgetMsg subMsg -> 
+            GitHubWidget.update subMsg model.gitHubWidget
+                |> Tuple.mapFirst Model
+                |> Tuple.mapSecond (Cmd.map GitHubWidgetMsg)
+
 
 
 
@@ -36,10 +42,10 @@ update msg model =
 
 
 view : Model -> Html Msg
-view model =
+view {gitHubWidget} =
     div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
+        [ GitHubWidget.view gitHubWidget 
+            |> Html.map GitHubWidgetMsg
         ]
 
 
