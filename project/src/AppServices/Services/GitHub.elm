@@ -1,9 +1,10 @@
 module AppServices.Services.GitHub exposing (..)
 
-import AppServices.DataTypes.GitHub exposing (UserName(..), User)
+import AppServices.DataTypes.GitHub exposing (User, UserName(..))
 import AppServices.Decoders.GitHub as GitHubDecoders
-import Json.Decode as Decode
-import Http 
+import Http
+
+
 
 -- services
 
@@ -12,7 +13,7 @@ searchUsers : (Result Http.Error (List UserName) -> msg) -> String -> Cmd msg
 searchUsers tagger query =
     Http.get
         { url = "https://api.github.com/search/users?q=" ++ query
-        , expect = Http.expectJson tagger (Decode.at [ "items" ] (Decode.list GitHubDecoders.userNameDecoder))
+        , expect = Http.expectJson tagger GitHubDecoders.userNamesDecoder
         }
 
 

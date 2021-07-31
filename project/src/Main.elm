@@ -1,9 +1,9 @@
 module Main exposing (..)
 
 import Browser
+import Components.GitHubWidget as GitHubWidget
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
-import Components.GitHubWidget as GitHubWidget
 
 
 
@@ -11,7 +11,7 @@ import Components.GitHubWidget as GitHubWidget
 
 
 type alias Model =
-    {gitHubWidget : GitHubWidget.Model}
+    { gitHubWidget : GitHubWidget.Model }
 
 
 init : ( Model, Cmd Msg )
@@ -30,11 +30,10 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GitHubWidgetMsg subMsg -> 
+        GitHubWidgetMsg subMsg ->
             GitHubWidget.update subMsg model.gitHubWidget
                 |> Tuple.mapFirst Model
                 |> Tuple.mapSecond (Cmd.map GitHubWidgetMsg)
-
 
 
 
@@ -42,9 +41,9 @@ update msg model =
 
 
 view : Model -> Html Msg
-view {gitHubWidget} =
+view { gitHubWidget } =
     div []
-        [ GitHubWidget.view gitHubWidget 
+        [ GitHubWidget.view gitHubWidget
             |> Html.map GitHubWidgetMsg
         ]
 

@@ -1,11 +1,11 @@
 module Components.UI.SuggestInput exposing (..)
 
 import Components.UI.Loader as Loader
+import Extras.Html as HtmlExtras
 import Html exposing (Html, div, input, li, text, ul)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onBlur, onClick, onFocus, onInput)
 import Task
-import Extras.Html as HtmlExtras
 
 
 type alias Model =

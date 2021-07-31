@@ -1,26 +1,30 @@
 module AppServices.Decoders.GitHub exposing (..)
 
-import AppServices.DataTypes.GitHub exposing (UserName(..), User)
-import Json.Decode as Decode
+import AppServices.DataTypes.GitHub exposing (User, UserName(..))
+import Json.Decode as Decode exposing (Decoder, at, field, int, list, map, map7, maybe, string)
+
 
 
 -- decoders
 
 
-userNameDecoder : Decode.Decoder UserName
+userNamesDecoder : Decoder (List UserName)
+userNamesDecoder =
+    at [ "items" ] (list userNameDecoder)
+
+
+userNameDecoder : Decoder UserName
 userNameDecoder =
-    Decode.field "login" Decode.string
-        |> Decode.map UserName
+    field "login" string |> map UserName
 
 
-userDecoder : Decode.Decoder User
+userDecoder : Decoder User
 userDecoder =
-    Decode.map7 User
+    map7 User
         userNameDecoder
-        (Decode.field "name" (Decode.maybe Decode.string))
-        (Decode.field "avatar_url" Decode.string)
-        (Decode.field "location" (Decode.maybe Decode.string))
-        (Decode.field "followers" Decode.int)
-        (Decode.field "following" Decode.int)
-        (Decode.field "public_repos" Decode.int)
-
+        (field "name" (maybe string))
+        (field "avatar_url" string)
+        (field "location" (maybe string))
+        (field "followers" int)
+        (field "following" int)
+        (field "public_repos" int)

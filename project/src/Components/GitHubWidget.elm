@@ -1,12 +1,13 @@
 module Components.GitHubWidget exposing (..)
 
+import AppServices.DataTypes.GitHub exposing (User, UserName(..))
+import AppServices.Services.GitHub as GitHubServices exposing (..)
 import Components.UI.SuggestInput as SuggestInput exposing (..)
+import Extras.Html as HtmlExtras
 import Html exposing (Html, div, h2, h3, img, p, text)
 import Html.Attributes exposing (class, src)
 import Http exposing (..)
-import AppServices.DataTypes.GitHub exposing (UserName(..), User)
-import AppServices.Services.GitHub as GitHubServices exposing (..)
-import Extras.Html as HtmlExtras
+
 
 type alias Model =
     { suggestInput : SuggestInput.Model
@@ -25,8 +26,8 @@ type Msg
     | FetchedUser (Result Http.Error User)
 
 
-toFilteredListHandlers : SuggestInput.Handlers Msg
-toFilteredListHandlers =
+suggestInputHandlers : SuggestInput.Handlers Msg
+suggestInputHandlers =
     { tagger = FilterListMsg
     , onChange = FilteredListChanged
     , optionSelected = UserNameSelected
@@ -45,7 +46,7 @@ update msg model =
             ( model, Cmd.none )
 
         FilterListMsg filterListMsg ->
-            SuggestInput.update toFilteredListHandlers filterListMsg model.suggestInput
+            SuggestInput.update suggestInputHandlers filterListMsg model.suggestInput
                 |> Tuple.mapFirst (\m -> { model | suggestInput = m })
 
         GotUsers res ->
@@ -76,9 +77,9 @@ update msg model =
             else
                 ( model, GitHubServices.searchUsers GotUsers q )
 
-        UserNameSelected option ->
+        UserNameSelected userName ->
             ( { model | suggestInput = SuggestInput.setIsLoading True model.suggestInput }
-            , GitHubServices.fetchUser FetchedUser (UserName option)
+            , GitHubServices.fetchUser FetchedUser (UserName userName)
             )
 
         FetchedUser response ->
@@ -109,7 +110,7 @@ view model =
                 [ div [ class "github-widget__content-wrapper" ]
                     [ model.userNames
                         |> List.map userNameToString
-                        |> SuggestInput.view toFilteredListHandlers model.suggestInput
+                        |> SuggestInput.view suggestInputHandlers model.suggestInput
                     , model.error
                         |> Maybe.map renderErrorMessage
                         |> Maybe.withDefault (text "")
@@ -129,12 +130,12 @@ renderSelectedUser { userName, name, avatarUrl, location, followers, following, 
     div [ class "github-widget__results" ]
         [ div [ class "github-widget__image-wrapper" ]
             [ img [ src avatarUrl ] []
-            , h2 [] 
+            , h2 []
                 [ name
                     |> Maybe.map text
                     |> Maybe.withDefault (text <| userNameToString userName)
                 ]
-            , h3 [ class "capitalise" ]
+            , h3 []
                 [ text <|
                     Maybe.withDefault "I Live in my mind" location
                 ]
@@ -160,8 +161,6 @@ renderErrorMessage err =
     div [ class "http-error" ]
         [ p [] [ text err ]
         ]
-
-
 
 
 
