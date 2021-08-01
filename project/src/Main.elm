@@ -2,8 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Components.GitHubWidget as GitHubWidget
-import Html exposing (Html, div, h1, img, text)
-import Html.Attributes exposing (src)
+import Html exposing (Html, div)
 
 
 

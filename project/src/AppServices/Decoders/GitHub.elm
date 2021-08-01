@@ -28,3 +28,8 @@ userDecoder =
         (field "followers" int)
         (field "following" int)
         (field "public_repos" int)
+
+
+decodeBadStausBody : Decode.Decoder String
+decodeBadStausBody =
+    Decode.field "message" Decode.string

@@ -1,9 +1,11 @@
 module Components.GitHubWidget exposing (..)
 
 import AppServices.DataTypes.GitHub exposing (User, UserName(..))
+import AppServices.Decoders.GitHub exposing (decodeBadStausBody)
 import AppServices.Services.GitHub as GitHubServices exposing (..)
 import Components.UI.SuggestInput as SuggestInput exposing (..)
 import Extras.Html as HtmlExtras
+import Extras.Http exposing (ErrorResolver(..))
 import Html exposing (Html, div, h2, h3, img, p, text)
 import Html.Attributes exposing (class, src)
 import Http exposing (..)
@@ -20,10 +22,10 @@ type alias Model =
 type Msg
     = NoOp
     | FilterListMsg SuggestInput.Msg
-    | GotUsers (Result Http.Error (List UserName))
+    | GotUsers (Result Extras.Http.Error (List UserName))
     | FilteredListChanged String
     | UserNameSelected String
-    | FetchedUser (Result Http.Error User)
+    | FetchedUser (Result Extras.Http.Error User)
 
 
 suggestInputHandlers : SuggestInput.Handlers Msg
@@ -66,7 +68,14 @@ update msg model =
                     )
 
                 Err err ->
-                    ( { model | error = errorToString err |> Just }, Cmd.none )
+                    ( { model
+                        | error =
+                            Just (ErrorResolver decodeBadStausBody identity)
+                                |> Extras.Http.errToString err
+                                |> Just
+                      }
+                    , Cmd.none
+                    )
 
         FilteredListChanged q ->
             if String.length q < 2 then
@@ -96,7 +105,7 @@ update msg model =
                 Err err ->
                     ( { model
                         | suggestInput = SuggestInput.setIsLoading False model.suggestInput
-                        , error = errorToString err |> Just
+                        , error = Extras.Http.errToString err Nothing |> Just
                       }
                     , Cmd.none
                     )
@@ -170,28 +179,3 @@ renderErrorMessage err =
 userNameToString : UserName -> String
 userNameToString (UserName str) =
     str
-
-
-errorToString : Http.Error -> String
-errorToString error =
-    case error of
-        Http.BadUrl url ->
-            "The URL " ++ url ++ " was invalid"
-
-        Http.Timeout ->
-            "Unable to reach the server, try again"
-
-        Http.NetworkError ->
-            "Unable to reach the server, check your network connection"
-
-        Http.BadStatus 500 ->
-            "The server had a problem, try again later"
-
-        Http.BadStatus 400 ->
-            "Verify your information and try again"
-
-        Http.BadStatus _ ->
-            "Unknown error"
-
-        Http.BadBody errorMessage ->
-            errorMessage
