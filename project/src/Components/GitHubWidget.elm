@@ -2,13 +2,14 @@ module Components.GitHubWidget exposing (..)
 
 import AppServices.DataTypes.GitHub exposing (User, UserName(..))
 import AppServices.Decoders.GitHub exposing (decodeBadStausBody)
-import AppServices.Services.GitHub as GitHubServices exposing (..)
-import Components.UI.SuggestInput as SuggestInput exposing (..)
+import AppServices.Services.GitHub as GitHubServices
+import Components.UI.SuggestInput as SuggestInput
 import Extras.Html as HtmlExtras
 import Extras.Http exposing (ErrorResolver(..))
 import Html exposing (Html, div, h2, h3, img, p, text)
 import Html.Attributes exposing (class, src)
 import Http exposing (..)
+import Utils.Debounce as Debounce exposing (Debounce(..))
 
 
 type alias Model =
@@ -16,12 +17,15 @@ type alias Model =
     , userNames : List UserName
     , selectedUser : Maybe User
     , error : Maybe String
+    , debounce : Debounce Msg
     }
 
 
 type Msg
     = NoOp
     | FilterListMsg SuggestInput.Msg
+    | DebounceMsg (Debounce.Msg Msg)
+    | SearchUsers String
     | GotUsers (Result Extras.Http.Error (List UserName))
     | FilteredListChanged String
     | UserNameSelected String
@@ -38,7 +42,8 @@ suggestInputHandlers =
 
 init : Model
 init =
-    Model SuggestInput.init [] Nothing Nothing
+    Debounce.init 200
+        |> Model SuggestInput.init [] Nothing Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -50,6 +55,14 @@ update msg model =
         FilterListMsg filterListMsg ->
             SuggestInput.update suggestInputHandlers filterListMsg model.suggestInput
                 |> Tuple.mapFirst (\m -> { model | suggestInput = m })
+
+        DebounceMsg debounceMsg ->
+            Debounce.update DebounceMsg debounceMsg model.debounce
+                |> Tuple.mapFirst
+                    (\debounce -> { model | debounce = debounce })
+
+        SearchUsers query ->
+            ( model, GitHubServices.searchUsers GotUsers query )
 
         GotUsers res ->
             case res of
@@ -84,7 +97,10 @@ update msg model =
                 )
 
             else
-                ( model, GitHubServices.searchUsers GotUsers q )
+                model.debounce
+                    |> Debounce.push DebounceMsg (SearchUsers q)
+                    |> Tuple.mapFirst
+                        (\debounce -> { model | debounce = debounce })
 
         UserNameSelected userName ->
             ( { model | suggestInput = SuggestInput.setIsLoading True model.suggestInput }
